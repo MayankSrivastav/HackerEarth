@@ -69,6 +69,21 @@ var Graph = function(){
         visited[s] = false;        
     };
 
+    Graph.prototype.shortestPath = function(shortOrQuick) {
+        var minDist = this.min;
+        for (var i = 0; i < this.allPaths.length; i++) {
+            var dist = 0;
+            for (var j = 0; j < this.allPaths[i].length - 1; j++) {
+                dist += this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]; 
+            }
+
+            if (dist < minDist) {
+                this.min = i;
+                minDist = dist;
+            }
+        }
+    };
+
     /*Graph.prototype.print = function() {
         console.log(this.nodes.map(function(vertex) {
             return (vertex + ' -> ' + this.edges[vertex].join(', ')).trim();
@@ -177,8 +192,11 @@ var controller = {
                         ]
                     }
                 }
-        //graph.readInput(input);
-        graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));  
+        graph.readInput(input);
+        graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));
+        graph.shortestPath("");  
+        //console.log(graph.min);
+
         console.log("completed");
     }
 };
