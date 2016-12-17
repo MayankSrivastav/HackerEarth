@@ -5,7 +5,7 @@ var Graph = function(){
     this.nodes = [];
     this.edges = [];
     this.numberOfEdges = 12;  
-    this.allPaths = [];    
+    this.allPaths = [];       
 
     // Initialize Graph with nodes    
     Graph.prototype.addNodes = function (node) {
@@ -43,7 +43,7 @@ var Graph = function(){
         if (s === d) {
             var temp = "";
             for (var i = 0; i < pathIdx; i++) {
-                temp += path[i] + '-->';                
+                temp += String.fromCharCode(path[i]) + '-->';                
             }
             console.log(temp);
             this.allPaths.push(path);
@@ -72,7 +72,7 @@ var leftPanelMainView = {
         this.go = document.getElementById('btnGo');
 
         this.go.addEventListener('click', function() {
-            
+            // Add code
         });
     }
 };
@@ -84,29 +84,29 @@ var controller = {
         // Initialize the Graph with predefined
         // distances
         var graph = new Graph();
-        graph.addNodes(0);
-        graph.addNodes(1);
-        graph.addNodes(2);
-        graph.addNodes(3);
-        graph.addNodes(4);
-        graph.addNodes(5);
+        graph.addNodes('S'.charCodeAt(0));
+        graph.addNodes('T'.charCodeAt(0));
+        graph.addNodes('U'.charCodeAt(0));
+        graph.addNodes('V'.charCodeAt(0));
+        graph.addNodes('X'.charCodeAt(0));
+        graph.addNodes('W'.charCodeAt(0));
         
         //graph.print(); // 1 -> | 2 -> | 3 -> | 4 -> | 5 -> | 6 ->
         
-        graph.addEdges(0, 1);
-        graph.addEdges(0, 3);
-        graph.addEdges(0, 4);
-        graph.addEdges(1, 3);
-        graph.addEdges(1, 4);
-        graph.addEdges(2, 0);
-        graph.addEdges(2, 1);
-        graph.addEdges(3, 2);
-        graph.addEdges(4, 3);
-        graph.addEdges(4, 5);
-        graph.addEdges(5, 0);
-        graph.addEdges(5, 2); 
-
-        //graph.findAllPaths(0, 3);  
+        graph.addEdges('S'.charCodeAt(0), 'T'.charCodeAt(0));
+        graph.addEdges('S'.charCodeAt(0), 'V'.charCodeAt(0));
+        graph.addEdges('S'.charCodeAt(0), 'X'.charCodeAt(0));
+        graph.addEdges('T'.charCodeAt(0), 'V'.charCodeAt(0));
+        graph.addEdges('T'.charCodeAt(0), 'X'.charCodeAt(0));
+        graph.addEdges('U'.charCodeAt(0), 'S'.charCodeAt(0));
+        graph.addEdges('U'.charCodeAt(0), 'T'.charCodeAt(0));
+        graph.addEdges('V'.charCodeAt(0), 'U'.charCodeAt(0));
+        graph.addEdges('X'.charCodeAt(0), 'V'.charCodeAt(0));
+        graph.addEdges('X'.charCodeAt(0), 'W'.charCodeAt(0));
+        graph.addEdges('W'.charCodeAt(0), 'S'.charCodeAt(0));
+        graph.addEdges('W'.charCodeAt(0), 'U'.charCodeAt(0)); 
+    
+        //graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));  
     }
 };
 
