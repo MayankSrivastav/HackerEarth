@@ -4,8 +4,10 @@
 var Graph = function(){
     this.nodes = [];
     this.edges = [];
-    this.numberOfEdges = 12;  
+    this.numberOfEdges = 0;  
     this.allPaths = [];       
+    this.input = "";    // Store the JSON input 
+    this.min = 99999;      // Store the shortest/quickest path index
 
     // Initialize Graph with nodes    
     Graph.prototype.addNodes = function (node) {
@@ -13,9 +15,15 @@ var Graph = function(){
         this.edges[node] = [];  
     };
 
+    // Graph input
+    Graph.prototype.readInput = function(input) {
+        this.input = input;
+    };
+
     // Initialize Graph with edges
     Graph.prototype.addEdges = function(node1, node2) {        
-        this.edges[node1].push(node2);        
+        this.edges[node1].push(node2);   
+        this.numberOfEdges++;     
     };
 
     // DFS to find all paths between 
@@ -41,12 +49,14 @@ var Graph = function(){
         // If the current node is not same as destination
         // then all nodes adjacent to the current node
         if (s === d) {
-            var temp = "";
+            //var temp = "", dist, idx;
+            var tmpPath = [];
             for (var i = 0; i < pathIdx; i++) {
-                temp += String.fromCharCode(path[i]) + '-->';                
+                tmpPath.push(path[i]);
             }
-            console.log(temp);
-            this.allPaths.push(path);
+            
+            //console.log(temp);
+            this.allPaths.push(tmpPath);
         } else {
             for (var i = 0; i < this.edges[s].length; i++) {
                 if (!visited[this.edges[s][i]]) {
@@ -105,8 +115,71 @@ var controller = {
         graph.addEdges('X'.charCodeAt(0), 'W'.charCodeAt(0));
         graph.addEdges('W'.charCodeAt(0), 'S'.charCodeAt(0));
         graph.addEdges('W'.charCodeAt(0), 'U'.charCodeAt(0)); 
-    
-        //graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));  
+        var input = {
+                    "S": {
+                        "T": [
+                        5,
+                        7
+                        ],
+                        "X": [
+                        4,
+                        4
+                        ],
+                        "V": [
+                        4,
+                        2
+                        ]
+                    },
+                    "T": {
+                        "X": [
+                        3,
+                        1
+                        ],
+                        "V": [
+                        5,
+                        2
+                        ]
+                    },
+                    "U": {
+                        "S": [
+                        7,
+                        2
+                        ],
+                        "T": [
+                        4,
+                        6
+                        ]
+                    },
+                    "V": {
+                        "U": [
+                        4,
+                        5
+                        ]
+                    },
+                    "X": {
+                        "V": [
+                        2,
+                        1
+                        ],
+                        "W": [
+                        5,
+                        3
+                        ]
+                    },
+                    "W": {
+                        "U": [
+                        7,
+                        5
+                        ],
+                        "S": [
+                        8,
+                        3
+                        ]
+                    }
+                }
+        //graph.readInput(input);
+        graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));  
+        console.log("completed");
     }
 };
 
