@@ -69,6 +69,8 @@ var Graph = function(){
         visited[s] = false;        
     };
 
+    // This function returns the Shortest or the Quickest
+    // path as requested
     Graph.prototype.shortestPath = function(shortOrQuick) {
         var minDist = this.min;
         for (var i = 0; i < this.allPaths.length; i++) {
