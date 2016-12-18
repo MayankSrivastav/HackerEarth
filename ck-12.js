@@ -74,7 +74,7 @@ var Graph = function(){
     // path as requested
     Graph.prototype.shortestPath = function(shortOrQuick) {
         var minDist = this.min;
-        if (shortOrQuick === "sp") {
+        if (shortOrQuick === "sp") {    // if user selects for shortest path
             for (var i = 0; i < this.allPaths.length; i++) {
                 var dist = 0, nToN = [];
                 for (var j = 0; j < this.allPaths[i].length - 1; j++) {
@@ -88,16 +88,23 @@ var Graph = function(){
                     minDist = dist;
                 }
             }
-        } else {
-            // Add code for qp
-        }
-    };
+        } else if (shortOrQuick === "qp") {     // if user selects quickest path
+            for (var i = 0; i < this.allPaths.length; i++) {
+                var dist = 0, nToN = [], speed = 0, time = 9999;
+                for (var j = 0; j < this.allPaths[i].length - 1; j++) {
+                    nToN.push(this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]);
+                    dist += this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]; 
+                    speed += this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][0];
+                }
+                this.nodeToNodeDist.push(nToN);     // Store all node to node distances in array
 
-    /*Graph.prototype.print = function() {
-        console.log(this.nodes.map(function(vertex) {
-            return (vertex + ' -> ' + this.edges[vertex].join(', ')).trim();
-        }, this).join(' | '));
-    };*/   
+                if ((dist / speed) < time) {
+                    this.min = i;
+                    time = (dist / speed);
+                }
+            }
+        }
+    };    
 };
 
 // View for left main panel
@@ -105,18 +112,26 @@ var leftPanelMainView = {
     init: function() {   
         this.go = document.getElementById('btnGo');             
         this.go.addEventListener('click', function() {
-            controller.init();
+            controller.init();  // Initialize the controller
         });
     },
 
+    // This function renders the views on the page
     render: function(min, allPaths, nToNDist) {
         var resultDiv = document.getElementById("result");
         var elem = '<div>';
+        // First print the optimal route        
+        for (var k = 0; k < allPaths[min].length; k++) {
+            elem += '<span>' + String.fromCharCode(allPaths[min][k]) + '</span>' + leftPanelMainView.printLine(nToNDist[min][k]);                
+        } 
+        elem += '</br></br>';
         for (var i = 0; i < allPaths.length; i++) {
-            for (var j = 0; j < allPaths[i].length; j++) {
-                elem += '<span>' + String.fromCharCode(allPaths[i][j]) + '</span>' + leftPanelMainView.printLine(nToNDist[i][j]);                
-            }   
-            elem += '</br></br>'; 
+            if (i !== min) {
+                for (var j = 0; j < allPaths[i].length; j++) {
+                    elem += '<span>' + String.fromCharCode(allPaths[i][j]) + '</span>' + leftPanelMainView.printLine(nToNDist[i][j]);                
+                }   
+                elem += '</br></br>';
+            } 
         }
         elem += "</div>";
         document.getElementById("result").innerHTML = elem;
@@ -132,9 +147,8 @@ var leftPanelMainView = {
     }
 };
 
-var controller = {
-    // Init function called by the controller
-    // on page load
+// Main controller of the view & model
+var controller = {    
     init: function(type) {
         // Initialize the Graph with predefined
         // distances
@@ -160,6 +174,8 @@ var controller = {
         graph.addEdges('X'.charCodeAt(0), 'W'.charCodeAt(0));
         graph.addEdges('W'.charCodeAt(0), 'S'.charCodeAt(0));
         graph.addEdges('W'.charCodeAt(0), 'U'.charCodeAt(0)); 
+
+        // JSON input for the graph
         var input = {
                     "S": {
                         "T": [
@@ -223,11 +239,12 @@ var controller = {
                     }
                 }
         graph.readInput(input);
-        var start = document.getElementById("txtStart").value.charCodeAt(0);
-        var end = document.getElementById("txtEnd").value.charCodeAt(0);
-        
-        //graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));
 
+        // Read user inputs
+        var start = document.getElementById("txtStart").value.charCodeAt(0);
+        var end = document.getElementById("txtEnd").value.charCodeAt(0);                
+
+        // Find all the paths between start and end nodes
         graph.findAllPaths(start, end);
         var option;
         var go = document.getElementById('btnGo');
@@ -235,13 +252,11 @@ var controller = {
             option = "sp"; // shortest path
         } else {
             option = "qp"; // quickest path
-        }1
+        }
         graph.shortestPath(option);
         leftPanelMainView.render(graph.min, graph.allPaths, graph.nodeToNodeDist);  
-        //console.log(graph.min);
-
-        console.log("completed");
     }
 };
 
+// Start the app
 leftPanelMainView.init();
