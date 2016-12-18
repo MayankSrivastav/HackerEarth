@@ -124,7 +124,7 @@ var leftPanelMainView = {
         for (var k = 0; k < allPaths[min].length; k++) {
             elem += '<span>' + String.fromCharCode(allPaths[min][k]) + '</span>' + leftPanelMainView.printLine(nToNDist[min][k]);                
         } 
-        elem += '</br></br>';
+        elem += '&nbsp&nbsp&nbsp&nbsp<span style="border-radius:5px;border:1px solid;background-color:#a7f1f1">&nbspBest Route&nbsp</span></br></br>';
         for (var i = 0; i < allPaths.length; i++) {
             if (i !== min) {
                 for (var j = 0; j < allPaths[i].length; j++) {
