@@ -119,7 +119,7 @@ var leftPanelMainView = {
     // This function renders the views on the page
     render: function(min, allPaths, nToNDist) {
         var resultDiv = document.getElementById("result");
-        var elem = '<div class="nodeRep">';
+        var elem = '</br><div class="nodeRep">';
         // First print the optimal route        
         for (var k = 0; k < allPaths[min].length; k++) {
             elem += '<span>' + String.fromCharCode(allPaths[min][k]) + '</span>' + leftPanelMainView.printLine(nToNDist[min][k]);                

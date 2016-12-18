@@ -7,6 +7,12 @@
     border: 2px solid ;
 }
 
+#innerPanel {
+    background-color: #92cef3;
+}
+#result {
+    background-color: white;
+}
 #btnGo {
     border-radius: 30px;
     border: none;

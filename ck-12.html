@@ -7,37 +7,40 @@
 </head>
 <body>
 <div class="leftPanel" >
-    </br>
-    
-    <table>    
-        <tr>
-            <td>
-                <img src="images/A.png" >
-            </td>
-            <td>
-                <input type="text" id="txtStart" name="txtStart" value="" style="width:300px;height:30px;background-color:#f7f7f7;border:1px solid"><br>
-            </td>    
-        </tr>
-        <tr>
-            <td>
-                <img src="images/B.png" >
-            </td>
-            <td>
-                <input type="text" id="txtEnd" name="txtEnd" value="" style="width:300px;height:30px;background-color:#f7f7f7;border:1px solid"><br>
-            </td>
-        </tr>  
-    </table> 
-    <table style="padding-left:22px">
-        <tr>
-            <td style="width:110px"><input id="sp" type="radio" name="pathType" value="shortestPath" checked> Shortest Path<td>
-            <td style="width:155px"><input id="qp" type="radio" name="pathType" value="quickestPath"> Quickest Path</td>
-            <td><input type="button" id="btnGo" value="Go"></td>
-        </tr>
-    </table>
+  
+    <div id="innerPanel">
+        <table>    
+            <tr>
+                <td>
+                    <img src="images/A.png" >
+                </td>
+                <td>
+                    <input type="text" placeholder="Source" id="txtStart" name="txtStart" value="" style="width:300px;height:30px;background-color:#f7f7f7;border:1px solid"><br>
+                </td>                    
+            </tr>
+            <tr>
+                <td>
+                    <img src="images/B.png" >
+                </td>
+                <td>
+                    <input type="text" placeholder="Destination" id="txtEnd" name="txtEnd" value="" style="width:300px;height:30px;background-color:#f7f7f7;border:1px solid">
+                </td>                
+            </tr>  
+        </table>
+    </div> 
+    <div style="background-color:#9bcaec">
+        <table style="padding-left:22px">
+            <tr>
+                <td style="width:110px"><input id="sp" type="radio" name="pathType" value="shortestPath" checked> Shortest Path<td>
+                <td style="width:155px"><input id="qp" type="radio" name="pathType" value="quickestPath"> Quickest Path</td>
+                <td><input type="button" id="btnGo" value="Go"></td>
+            </tr>
+        </table>
+    </div
     </br>
     <div id="result" style="padding-left:25px">
-        
-    </div>
+        </br>
+    </div><hr>
 </div>
 
 <script src="ck-12.js"></script>
