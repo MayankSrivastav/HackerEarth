@@ -6,8 +6,9 @@ var Graph = function(){
     this.edges = [];
     this.numberOfEdges = 0;  
     this.allPaths = [];       
-    this.input = "";    // Store the JSON input 
-    this.min = 99999;      // Store the shortest/quickest path index
+    this.input = "";            // Store the JSON input 
+    this.min = 99999;           // Store the shortest/quickest path index
+    this.nodeToNodeDist = []    // This stores node to node distances for all paths
 
     // Initialize Graph with nodes    
     Graph.prototype.addNodes = function (node) {
@@ -73,16 +74,22 @@ var Graph = function(){
     // path as requested
     Graph.prototype.shortestPath = function(shortOrQuick) {
         var minDist = this.min;
-        for (var i = 0; i < this.allPaths.length; i++) {
-            var dist = 0;
-            for (var j = 0; j < this.allPaths[i].length - 1; j++) {
-                dist += this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]; 
-            }
+        if (shortOrQuick === "sp") {
+            for (var i = 0; i < this.allPaths.length; i++) {
+                var dist = 0, nToN = [];
+                for (var j = 0; j < this.allPaths[i].length - 1; j++) {
+                    nToN.push(this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]);
+                    dist += this.input[String.fromCharCode(this.allPaths[i][j])][String.fromCharCode(this.allPaths[i][j + 1])][1]; 
+                }
+                this.nodeToNodeDist.push(nToN);     // Store all node to node distances in array
 
-            if (dist < minDist) {
-                this.min = i;
-                minDist = dist;
+                if (dist < minDist) {
+                    this.min = i;
+                    minDist = dist;
+                }
             }
+        } else {
+            // Add code for qp
         }
     };
 
@@ -95,19 +102,40 @@ var Graph = function(){
 
 // View for left main panel
 var leftPanelMainView = {
-    init: function() {
-        this.go = document.getElementById('btnGo');
-
+    init: function() {   
+        this.go = document.getElementById('btnGo');             
         this.go.addEventListener('click', function() {
-            // Add code
+            controller.init();
         });
+    },
+
+    render: function(min, allPaths, nToNDist) {
+        var resultDiv = document.getElementById("result");
+        var elem = '<div>';
+        for (var i = 0; i < allPaths.length; i++) {
+            for (var j = 0; j < allPaths[i].length; j++) {
+                elem += '<span>' + String.fromCharCode(allPaths[i][j]) + '</span>' + leftPanelMainView.printLine(nToNDist[i][j]);                
+            }   
+            elem += '</br></br>'; 
+        }
+        elem += "</div>";
+        document.getElementById("result").innerHTML = elem;
+    },
+
+    printLine: function(noOfTimes) {
+        var lines = "";
+        for (var i = 0; i < noOfTimes; i++) {
+            lines += '<img src="images/one.png">';
+        }
+
+        return lines;
     }
 };
 
 var controller = {
     // Init function called by the controller
     // on page load
-    init: function() {
+    init: function(type) {
         // Initialize the Graph with predefined
         // distances
         var graph = new Graph();
@@ -195,12 +223,25 @@ var controller = {
                     }
                 }
         graph.readInput(input);
-        graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));
-        graph.shortestPath("");  
+        var start = document.getElementById("txtStart").value.charCodeAt(0);
+        var end = document.getElementById("txtEnd").value.charCodeAt(0);
+        
+        //graph.findAllPaths('S'.charCodeAt(0), 'V'.charCodeAt(0));
+
+        graph.findAllPaths(start, end);
+        var option;
+        var go = document.getElementById('btnGo');
+        if (document.getElementById('sp').checked) {
+            option = "sp"; // shortest path
+        } else {
+            option = "qp"; // quickest path
+        }1
+        graph.shortestPath(option);
+        leftPanelMainView.render(graph.min, graph.allPaths, graph.nodeToNodeDist);  
         //console.log(graph.min);
 
         console.log("completed");
     }
 };
 
-controller.init();
+leftPanelMainView.init();

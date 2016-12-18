@@ -1,8 +1,13 @@
 .leftPanel {
-    background-color: #c9f1fd;
-    width:1000px;
-    height: 500px;
+    background-color: white;
+    width:600px;
+    height:650px;
     border-width: 1px;
     border-style: solid;
     border-color: black;
 }
+
+#btnGo {
+    border-radius: 30px;
+}
+
