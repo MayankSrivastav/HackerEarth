@@ -201,7 +201,7 @@ var HackernewsController = {
 
     getSearchResults: function(searchString) {
         var newData = new HackernewsModel();
-        var results = newData.getNewsSearchResults(searchString);        
+        var results = newData.getNewsSearchResults(searchString.trim());        
     }
 };
 
