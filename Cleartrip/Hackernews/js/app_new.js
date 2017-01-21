@@ -4,14 +4,14 @@
 // The model for the application
 var HackernewsModel = function() {
     this.html = "";
-    this.data = "";        
+    this.data = "";
+    this.database = undefined;    
 };
 
 // This function gets the data from
 // the server using the server url.
 // The request is done through XHR
 HackernewsModel.prototype.getHackerNewsData = function(serverUrl) {
-    document.getElementById("mainContent").innerHTML = "<strong>Please wait...</strong>";
     var self = this;
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -32,8 +32,7 @@ HackernewsModel.prototype.getHackerNewsData = function(serverUrl) {
             // Insert the html in the mainContent area
             HackernewsView.render(self.html) ;
 
-            if (self.checkIndexDBSupport)
-                self.writeToDB(this.data);
+            self.writeToDB(this.data);
         }
     };
 
@@ -57,63 +56,45 @@ HackernewsModel.prototype.getDomainFromUrl = function(url) {
     return domain;
 };
 
-// This function returns the matched
-// results of the search string. if
-// no entry is matched then it returns
-// an error message
 HackernewsModel.prototype.getNewsSearchResults = function(searchString) {  
     var self = this;
-    if (!self.checkIndexDBSupport) {
-        document.getElementById("mainContent").innerHTML += "Your browser doesn't support database operations :(";
-        return;
-    }
-
     var request = window.indexedDB.open("newsItemDB", 8);
     
     request.onerror = function(event) {
         console.log("error: ");
     };
         
-    request.onsuccess = function(event) {          
+    request.onsuccess = function(event) {  
+        
         var db = request.result;
-
-        var transaction = db.transaction(["newsItems"], "readwrite");
-        var objectStore = transaction.objectStore("newsItems");
+        
+        var objectStore = db.transaction("newsItems").objectStore("newsItems");
         var index = objectStore.index("author");
         var results = [], i = 0;        
         document.getElementById("mainContent").innerHTML = "";
 
         index.openCursor().onsuccess = function(event) {                        
-            var cursor = event.target.result;     
-                   
+            var cursor = event.target.result;
             if (cursor) {
-            // If an entry is matched then append 
-            // the values to the HTML
-            if (cursor.key === searchString) {
-                results.push(cursor.value);
-                self.html = "<article><header><strong>&#x2022; <a target='_blank' href=" + results[i].url + ">" + results[i].title +"</a></strong>" 
-                + " from " + self.getDomainFromUrl(results[i].url) + "</header>"
-                + "</article>" + "<footer><p>" + results[i].num_points + " points by " + results[i].author
-                + " | created: " + results[i].created_at
-                + " | " + results[i].num_comments + " comments"
-                + "</p></footer>";
-                document.getElementById("mainContent").innerHTML += self.html;
-                i++;
-            }
-                            
-            cursor.continue();
-            } else {
-                // If no entry matched then return error
-                if (document.getElementById("mainContent").innerHTML === "")
-                    document.getElementById("mainContent").innerHTML = "Your search returned 0 results.";
-            }                                            
+                if (cursor.key === searchString) {
+                    results.push(cursor.value);
+                    self.html = "<article><header><strong>&#x2022; <a target='_blank' href=" + results[i].url + ">" + results[i].title +"</a></strong>" 
+                    + " from " + self.getDomainFromUrl(results[i].url) + "</header>"
+                    + "</article>" + "<footer><p>" + results[i].num_points + " points by " + results[i].author
+                    + " | created: " + results[i].created_at
+                    + " | " + results[i].num_comments + " comments"
+                    + "</p></footer>";
+                    document.getElementById("mainContent").innerHTML += self.html;
+                    i++;
+                }
+                                
+                cursor.continue();
+            }                              
         }      
     }    
 };
 
-// This function writes the returned results to
-// indexdb
-HackernewsModel.prototype.writeToDB = function(newsData) {        
+HackernewsModel.prototype.writeToDB = function(newsData) {     
     var db;   
     var request = window.indexedDB.open("newsItemDB", 8);            
 
@@ -122,19 +103,18 @@ HackernewsModel.prototype.writeToDB = function(newsData) {
     };
     
     request.onsuccess = function(event) {
-        var db = request.result;    
-        //console.log("success: "+ db);                
+        var db = request.result;
+        // this.database = db;
+        
+        console.log("success: "+ db);                
     };        
 
     request.onupgradeneeded = function(event) {
         var db = event.target.result;
-        
+        db.deleteObjectStore("newsItems");
         var objectStore = db.createObjectStore("newsItems", { keyPath: "id" });
         objectStore.createIndex("author", "author", { unique: false });
 
-        // If successfully created the object store and indexes
-        // then store the data returned from server in the object
-        // store for later use
         objectStore.transaction.oncomplete = function(event) {
             // Store values in the newly created objectStore.
             var newsObjectStore = db.transaction("newsItems", "readwrite").objectStore("newsItems");
@@ -142,30 +122,35 @@ HackernewsModel.prototype.writeToDB = function(newsData) {
                 newsObjectStore.add(newsData[i]);
             }               
         }
-    };                          
+    };                         
 };
 
-// This function checks if IndexedDB operations
-// are supported on the browser
-HackernewsModel.prototype.checkIndexDBSupport = function() {
-    // Check if indexedDB is supported by the browser
-    window.indexedDB = window.indexedDB || window.mozIndexedDB 
-                    || window.webkitIndexedDB || window.msIndexedDB;
-    
-    //prefixes of window.IDB objects
-    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction
-                            || window.msIDBTransaction;
+// HackernewsModel.prototype.initNewsDB = function(newData) {   
+//     return new Promise(function(resolve, reject) {     
+            
+//     });                 
+// };
 
-    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange 
-                        || window.msIDBKeyRange
+
+// function checkIndexDBSupport() {
+//     // Check if indexedDB is supported by the browser
+//     window.indexedDB = window.indexedDB || window.mozIndexedDB 
+//                     || window.webkitIndexedDB || window.msIndexedDB;
     
-    if (!window.indexedDB) {
-        return false;
-        //window.alert("Your browser doesn't support a stable version of IndexedDB.")
-    } else {
-        return true;
-    }   
-};
+//     //prefixes of window.IDB objects
+//     window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction
+//                             || window.msIDBTransaction;
+
+//     window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange 
+//                         || window.msIDBKeyRange
+    
+//     if (!window.indexedDB) {
+//         return false;
+//         //window.alert("Your browser doesn't support a stable version of IndexedDB.")
+//     } else {
+//         return true;
+//     }   
+// }
 
 // The view of the application
 // This is updated by the HackernewsModel
@@ -181,7 +166,6 @@ var HackernewsView = {
     // Once the data is returned, update the 
     // view of the application
     render: function(newsHtml) {
-        document.getElementById("mainContent").innerHTML = "";
         document.getElementById("mainContent").innerHTML = newsHtml;
     }
 };
